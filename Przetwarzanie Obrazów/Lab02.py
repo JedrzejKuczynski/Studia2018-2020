@@ -9,9 +9,9 @@ def odd_matrix(matrix):
 def reverse_columns(matrix):
 	return matrix[:, ::-1]
 
-#Zad. 3 Później
+#Zad. 3
 def sum_of_rectangle(matrix, x, y, width, height):
-	return np.sum(matrix[y]) #???? razem z krawędzią, bez?
+	return np.sum(matrix[y:height, x:width])
 
 #Zad. 4
 def sum_of_powers(numbers, k):
@@ -28,24 +28,24 @@ def two_matrices(x, y):
 def sum_to_x(numbers, x):
 	return np.sum(numbers[numbers < x])
 
-#Zad. 7 Później
-#def enlarge_matrix(matrix, k):
-#	if isinstance(k, int) and k >= 0:
+#Zad. 7
+def expand_matrix(matrix, k):
+	if isinstance(k, int) and k >= 0:
+		zeros_ver = np.zeros((k, matrix.shape[1]), dtype=np.uint8)
+		matrix = np.vstack((matrix, zeros_ver))
+		matrix = np.vstack((zeros_ver, matrix))
+		zeros_hor = np.zeros((matrix.shape[0], k), dtype=np.uint8)
+		matrix = np.hstack((matrix, zeros_hor))
+		matrix = np.hstack((zeros_hor, matrix))
+		return matrix
+	else:
+		return -1
+		
 
-#Zad. 8 Później
+#Zad. 8
 def row_out(x):
-	pass
+	return x[1:, :] - x[:-1, :]
 
 #Zad. 9
 def image_RGB(x, y, r, g, b):
-	img = np.zeros((y, x*3, 3), dtype=np.uint8)
-	img[:, :x] = [r, 0, 0]
-	img[:, x:2*x] = [0, g, 0]
-	img[:, 2*x:] = [0, 0, b]
-	return img
-
-image = image_RGB(10, 30, 245, 200, 255)
-print(image.shape)
-
-plt.imshow(image)
-plt.show()
+	return np.array([[[r, 0, 0]*x, [0, g, 0]*x, [0, 0, b]*x]*y]).reshape(y, x*3, 3)
