@@ -11,7 +11,7 @@ def reverse_columns(matrix):
 
 #Zad. 3
 def sum_of_rectangle(matrix, x, y, width, height):
-	return np.sum(matrix[y:height, x:width])
+	return np.sum(matrix[y:y+height, x:x+width])
 
 #Zad. 4
 def sum_of_powers(numbers, k):
