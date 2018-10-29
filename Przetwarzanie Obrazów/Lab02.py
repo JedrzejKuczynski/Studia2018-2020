@@ -31,13 +31,7 @@ def sum_to_x(numbers, x):
 #Zad. 7
 def expand_matrix(matrix, k):
 	if isinstance(k, int) and k >= 0:
-		zeros_ver = np.zeros((k, matrix.shape[1]), dtype=np.uint8)
-		matrix = np.vstack((matrix, zeros_ver))
-		matrix = np.vstack((zeros_ver, matrix))
-		zeros_hor = np.zeros((matrix.shape[0], k), dtype=np.uint8)
-		matrix = np.hstack((matrix, zeros_hor))
-		matrix = np.hstack((zeros_hor, matrix))
-		return matrix
+		return np.pad(matrix, ((k, k), (k, k)), "constant")
 	else:
 		return -1
 		
