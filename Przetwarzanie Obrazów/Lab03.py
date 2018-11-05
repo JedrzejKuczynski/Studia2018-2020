@@ -52,5 +52,63 @@ def testA3():
 				[36, 0, 16]]
 	np.testing.assert_array_equal(result, expected)
 
+def zadA4(image):
+	monochromatic = np.zeros((image.shape[0], image.shape[1]))
+	monochromatic = 0.21*image[:, :, 0] + 0.72*image[:, :, 1] + 0.07*image[:, :, 2]
+	return np.rint(monochromatic)
 
+def testA4():
+	#normalny
+	result = zadA4(np.array([[[255, 128, 0], [64, 32, 16]],
+
+							 [[128, 0, 255], [255, 255, 0]],
+
+							 [[0, 255, 128], [255, 255, 255]]], np.uint8))
+	expected = [[146, 38],
+				[45, 237],
+				[193, 255]]
+	np.testing.assert_array_equal(result, expected)
+
+def zadA5(image):
+	image = image.astype(float)
+	r, g, b = image[:, :, 0], image[:, :, 1], image[:, :, 2]
+	alfa = (2*r - g- b)/2
+	beta = (3**(1/3)/2)*(g-b)
+	hue = np.arctan2(beta, alfa)
+	hue = (hue - np.min(hue))/(np.max(hue) - np.min(hue))
+	print(hue, "\n")
+	hue *= 360
+	print(hue, "\n")
+	hue[hue >= 360] = 0
+	print(hue)
+	return hue
+
+def testA5():
+	#normalny
+	pass
+
+def zadA6(imageA, imageB, alpha):
+	return np.rint(alpha*imageA + (1 - alpha)*imageB)
+
+def testA6():
+	#normalny
+	result = zadA6(np.array([[255, 0, 128],
+							 [32, 16, 128],
+							 [255, 255, 255]], np.uint8), np.array([[32, 64, 128],
+							 										[255, 255, 255],
+							 										[255, 255, 0]], np.uint8), 0.7)
+	expected = [[188, 19, 128],
+				[99, 88, 166],
+				[255, 255, 178]]
+	np.testing.assert_array_equal(result, expected)
+
+testA1()
+testA2()
 testA3()
+testA4()
+testA6()
+zadA5(np.array([[[255, 128, 0], [64, 32, 16]],
+
+							 [[128, 0, 255], [255, 255, 0]],
+
+							 [[0, 255, 128], [255, 255, 255]]], np.uint8))
