@@ -1,0 +1,26 @@
+1 G   7(A) - C  22(A) -    cWW  -    4
+ 2 G   8(A) - C  21(A) -    cWW  -    4
+ 3 G   8(A) - A  25(A) -    tsS  -    4
+ 4 U   9(A) - A  20(A) -    cWW  -    4
+ 5 G  10(A) - G  28(A) -    cWH  -    2
+ 6 C  11(A) - G  30(A) -    cWW  -    0
+ 7 G  12(A) - C  33(A) -    cWW  -    1
+ 8 C  13(A) - G  32(A) -    cWW  -    1
+ 9 A  14(A) - A  31(A) -    tWW  -    1
+10 U  15(A) - C  29(A) -    cWW  -    0
+11 A  17(A) - C  29(A) -    bif  -    0
+12 C  18(A) - G  28(A) -    cWW  -    0
+13 C  19(A) - G  26(A) -    cWW  -    0
+14 A  20(A) - U   9(A) -    cWW  -    4
+15 C  21(A) - G   8(A) -    cWW  -    4
+16 C  22(A) - G   7(A) -    cWW  -    4
+17 A  25(A) - G   8(A) -    tSs  -    4
+18 G  26(A) - C  19(A) -    cWW  -    0
+19 G  28(A) - G  10(A) -    cHW  -    2
+20 G  28(A) - C  18(A) -    cWW  -    0
+21 C  29(A) - U  15(A) -    cWW  -    0
+22 C  29(A) - A  17(A) -    bif  -    0
+23 G  30(A) - C  11(A) -    cWW  -    0
+24 A  31(A) - A  14(A) -    tWW  -    1
+25 G  32(A) - C  13(A) -    cWW  -    1
+26 C  33(A) - G  12(A) -    cWW  -    1
