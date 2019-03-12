@@ -1,3 +1,4 @@
+import argparse
 import collections
 import itertools
 
@@ -23,8 +24,6 @@ def zad01(infile, outfile):
 		for first, second in pairs:
 			f.write("{0} {1}\n".format(first, second))
 
-#zad01("1DDY.txt", "outfile_01.txt")
-
 
 def zad02(infile, outfile):
 	with open(infile, 'r') as f:
@@ -40,9 +39,6 @@ def zad02(infile, outfile):
 				f.write("{0} {1}\n".format(x, y))
 
 
-#zad02("outfile_01.txt", "outfile_02.txt")
-
-
 def zad03(infile, outfile):
 	with open(infile, 'r') as f:
 		pairs = []
@@ -50,19 +46,38 @@ def zad03(infile, outfile):
 			linefile = linefile.split()
 			pair = (int(linefile[0]), int(linefile[1]))
 			pairs.append(pair)
+
 	d = collections.OrderedDict()
-	for i in range(len(pairs) - 1):
-		diff_first = pairs[i + 1][0] - pairs[i][0]
-		diff_second = pairs[i][1] - pairs[i + 1][1]
-		if diff_first == 1 and diff_second == 1:
-			if pairs[i] in sum(d.values(), []):
-				d[pairs[i - 1]].append(pairs[i + 1])
-			else:
-				d[pairs[i]] = []
-				d[pairs[i]].extend([pairs[i], pairs[i + 1]])
+
+	for i in range(len(pairs)):
+		counter = 1
+		for j in range(i+1, len(pairs)):
+			if pairs[j][0] == pairs[i][0] + counter and pairs[j][1] == pairs[i][1] - counter:
+				counter += 1
+				values = sum(d.values(), [])
+				if pairs[i] not in d.keys() and pairs[i] not in values:
+					d[pairs[i]] = [pairs[i]]
+				if pairs[j] not in values:
+					d[pairs[i]].append(pairs[j])
+
 	with open(outfile, 'w') as f:
 		for k, v in d.items():
 			f.write("{0} {1} {2}\n".format(k[0], k[1], len(v)))
 
 
-zad03("outfile_01.txt", "outfile_03.txt")
+functions = {"zad01": zad01,
+			 "zad02": zad02,
+			 "zad03": zad03
+			 }
+
+parser = argparse.ArgumentParser(description="Zadanie z Laboratorium #1 z Bioinformatyki Strukturalnej")
+parser.add_argument("function", help="nazwa funkcji, ktora ma byc wywolana. Funkcje nazywaja sie zad01, zad02 itd.")
+parser.add_argument("infile", help="nazwa pliku wejsciowego")
+parser.add_argument("outfile", help="nazwa pliku wyjsciowego")
+args = parser.parse_args()
+
+try:
+	func = functions[args.function]
+	func(args.infile, args.outfile)
+except:
+	print("Cos poszlo nie tak!")
