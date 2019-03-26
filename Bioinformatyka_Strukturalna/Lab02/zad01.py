@@ -1,3 +1,12 @@
+import argparse
+
+
+parser = argparse.ArgumentParser(description="Zadanie z Laboratorium #2 z Bioinformatyki Strukturalnej")
+parser.add_argument("pdb1", help="plik PDB")
+parser.add_argument("pdb2", help="plik PDB")
+parser.add_argument("atom_name", help="interesujacy nas atom")
+args = parser.parse_args()
+
 def zad01(pdb_1, pdb_2, atom_name):
 	coords_1 = []
 	coords_2 = []
@@ -40,4 +49,4 @@ def zad01(pdb_1, pdb_2, atom_name):
 		print(rmsd)
 
 
-zad01("1EHZ.pdb", "1FFK.pdb", "P")
+zad01(args.pdb1, args.pdb2, args.atom_name)

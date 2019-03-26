@@ -1,3 +1,11 @@
+import argparse
+
+
+parser = argparse.ArgumentParser(description="Zadanie z Laboratorium #2 z Bioinformatyki Strukturalnej")
+parser.add_argument("target", help="plik BP z czasteczka referencyjna")
+parser.add_argument("model", help="plik BP z modelem")
+args = parser.parse_args()
+
 def zad03(target, model):
 	pairs_target = []
 	pairs_model = []
@@ -30,4 +38,4 @@ def zad03(target, model):
 	inf = round((ppv * sty) ** 0.5, 2)
 	print(inf)
 
-zad03("target.bp", "model.bp")
+zad03(args.target, args.model)
