@@ -1,0 +1,1 @@
+podstawowa komenda: /home/tools/bowtie1/bowtie referencja -f reads_all.fasta --best --suppress 5,6,7
