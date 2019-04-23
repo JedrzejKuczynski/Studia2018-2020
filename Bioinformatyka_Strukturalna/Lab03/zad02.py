@@ -78,4 +78,4 @@ def zad02(pdb):
                         print(first_nt_number, seq_string, last_nt_number)
 
 
-zad02("1RLG.json")
+zad02(args.json)
