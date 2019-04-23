@@ -114,7 +114,6 @@ def zad01(pdb):
                             else:
                                 interactions.append(False)
 
-
     for key, value in residues.items():
         if value.paired is False:
             bpseq_list.append((value, 0))
@@ -123,5 +122,6 @@ def zad01(pdb):
 
     for bp in bpseq_list:
         print("{0} {1} {2}".format(bp[0].number, bp[0].name, bp[1]))
-        
+
+
 zad01(args.pdb)
