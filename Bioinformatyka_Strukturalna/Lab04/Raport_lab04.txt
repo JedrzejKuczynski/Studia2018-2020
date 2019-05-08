@@ -1,0 +1,26 @@
+Przewidywanie struktury RNA z pojedynczej sekwencji
+
+1. Losowo wygenerowana sekwencja RNA
+GUCCCUCGCACUGUCCUAAACCAACGCAAACUGAGACCCAACGACGAUUU
+
+2. RNAfold
+
+Energia -2.10 kcal/mol
+
+1      GUCCCUCGCACUGUCCUAAACCAACGCAAACUGAGACCCAACGACGAUUU
+
+1      ....((((...(((...........)))...))))...............
+
+3. RNAstructure
+
+>ENERGY = -2.1  >Jedrzejowa
+GUCCCUCGCACUGUCCUAAACCAACGCAAACUGAGACCCAACGACGAUUU
+....((((...(((...........)))...))))...............
+
+4. Miara INF = 1. Struktury są identyczne
+
+5. RNAinverse
+
+GUCCCUCGCAUUGUCCUAACCCCCCGCAUACUGAGACCCAACGCCGCUUU
+
+Przewidywanie struktury RNA z alignmentu wielu sekwencji
