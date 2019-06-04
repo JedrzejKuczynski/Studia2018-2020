@@ -23,20 +23,24 @@ GUCCCUCGCACUGUCCUAAACCAACGCAAACUGAGACCCAACGACGAUUU
 
 GUCCCUCGCAUUGUCCUAACCCCCCGCAUACUGAGACCCAACGCCGCUUU
 
+Sekwencja nieznacznie różni się od losowo wygenerowanej sekwencji.
+
+
 Przewidywanie struktury RNA z alignmentu wielu sekwencji
 
 Wybrana rodzina Rfam: Lysine riboswitch
 
-4. TurboFold
-
 6. Porównania
-	6.1 0
-	6.2 0
-	6.3 0
-	6.4 0
-	6.5 0
-	6.6 0
-	6.7 0
-	6.8 0
-	6.9 0
-	6.10 0
+	INF:
+		6.1 0
+		6.2 0
+		6.3 0
+		6.4 0
+		6.5 0
+		6.6 0
+		6.7 0
+		6.8 0
+		6.9 0
+		6.10 0
+
+	10 struktur obliczonych za pomocą narzędzia TurboFold są całkowicie różne od struktury konsensusowej obliczonej za pomocą LocARNA.
