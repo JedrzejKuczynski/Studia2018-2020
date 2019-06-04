@@ -1,0 +1,3 @@
+>ENERGY = 18.1  X00008.1/296-492
+CAGGCCAGAAGAGGCGCGUUGCCCAAGUAACGGUGUUGGAGGAGCCAGUCCUGUGAUAACACCUGAGGGGGUGCAUCGCCGAGGUGAUUGAACGGCUGGCCACGUUCAUCAUCGGCUAAGGGGGCUGAAUCCCCUGGGUUGUCACCAGAAGCGUUCGCAGUCGGGCGUUUCGCAAGUGGUGGAGCACUUCUGGGUGA
+....(((((((.((((....((((.......(((((((.((((.....)))).)...)))))).....))))....))))..((((((.(((((........))))))))))).(((.((((((.....)))))).)))..((((((((((((((((....)))))))))).....))))))....)))))))....

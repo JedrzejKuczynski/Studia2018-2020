@@ -24,3 +24,7 @@ GUCCCUCGCACUGUCCUAAACCAACGCAAACUGAGACCCAACGACGAUUU
 GUCCCUCGCAUUGUCCUAACCCCCCGCAUACUGAGACCCAACGCCGCUUU
 
 Przewidywanie struktury RNA z alignmentu wielu sekwencji
+
+Wybrana rodzina Rfam: Lysine riboswitch
+
+4. TurboFold

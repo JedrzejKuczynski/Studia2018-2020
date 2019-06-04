@@ -1,0 +1,3 @@
+>ENERGY = 17.1  M93419.1/332-511
+AGUGAAGAUAGAGGUGCGAACUUCAUCAGUAAAAGCUUGGAGAAGAAUGAGCUUCAAUGAAAAGCUUUGAAAGGGAACGUUCGCCGAAGUGAAGAAAAACUCAUUUUUUUCUUUGCUGGUCCUGCAUUUAAGAGAUGCCGGAUUGUCAAGGCGGUGCCGCCUUGGAGAGCUAUCUCACUG
+((((.((((((....(((((((((.......(((((((...((((......))))......)))))))......))).))))))...((((((((((((......)))))))))))).((((.(((((.....))))).))))..((((((((....))))))))....)))))))))).
