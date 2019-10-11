@@ -36,6 +36,8 @@ class1_y = np.array(class1_y)
 
 
 plt.plot(class1_x, class1_y.round(2))
+plt.savefig("Class1.png")
+plt.close()
 plt.show()
 
 class2_x = []
@@ -58,4 +60,6 @@ class2_y = np.array(class2_y)
 
 
 plt.plot(class2_x, class2_y.round(2))
+plt.savefig("Class2.png")
+plt.close()
 plt.show()
