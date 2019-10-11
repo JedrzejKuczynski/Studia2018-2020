@@ -1,0 +1,9 @@
+1. Class 1 Excitable:
+	- stymulacja progowa: 2.26
+	- wysycenie: 4
+	- 10 punktów co 0.2
+
+2. Class 2 Excitable:
+	- stymulacja progowa: 0.33
+	- wysycenie: 0.7
+	- 10 punktów co 0.04
