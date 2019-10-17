@@ -1,0 +1,134 @@
+@import url(c:\Users\student\Desktop\JJ\Lab02\projekt_Lab02\css\normalize.css);
+@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap");
+@font-face {
+  font-family: 'Elektra';
+  src: url("../fonts/elektra_light_pro_regular-webfont.woff2") format("woff2"), url("../fonts/elektra_light_pro_regular-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+}
+
+.container {
+  background-color: navy;
+  color: white;
+  font-family: 'Elektra', sans-serif;
+  padding: 15px;
+  -webkit-transition: all 500ms ease-in-out;
+  transition: all 500ms ease-in-out;
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .container {
+    width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: red;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .container {
+    width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: chocolate;
+  }
+}
+
+.header {
+  background-color: chartreuse;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+}
+
+.main {
+  background-color: teal;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.section {
+  border: 1px solid darkgray;
+  margin: 5px;
+  padding: 5px;
+  width: 10%;
+}
+
+.second {
+  -ms-flex-item-align: center;
+      align-self: center;
+  width: 40%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: wrap;
+      -ms-flex: wrap;
+          flex: wrap;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.second p {
+  border: 1px solid orange;
+  margin: 5px;
+  padding: 5px;
+}
+
+.footer {
+  background-color: crimson;
+}
+
+a {
+  -webkit-transition: all 300ms ease-in;
+  transition: all 300ms ease-in;
+}
+
+.main-nav {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+.main-nav ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.main-nav ul li {
+  margin-left: 3px;
+  margin-right: 3px;
+  border-right: 1px solid darkorchid;
+}
+
+.main-nav ul li:last-child {
+  border-right: none;
+}
+
+.main-nav ul li a {
+  color: darkgreen;
+  text-decoration: none;
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+
+.main-nav ul li a:hover {
+  color: red;
+}
+/*# sourceMappingURL=style.css.map */

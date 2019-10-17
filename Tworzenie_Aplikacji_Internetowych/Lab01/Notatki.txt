@@ -1,0 +1,2 @@
+Elementy blokowe: div, p, h1
+Elementy liniowe: span, strong, em, a
