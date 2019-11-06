@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+    <title>Zadanie Domowe - SemanticUI</title>
+</head>
+<body>
+    <div class="ui top attached four item menu">
+        <a class="active item">Home</a>
+        <a class="item">Shop</a>
+        <a class="item">About</a>
+        <a class="item">Contact</a>
+    </div>
+    <div class="row">
+        <div class="column">
+            <div class="ui huge message">
+                <h1 class="ui huge header">Hello, my friend!</h1>
+                <p>Stay awhile and listen.</p>
+                <div class="ui accordion">
+                    <div class="title">
+                        <i class="dropdown icon"></i> Who is Deckard Cain?
+                    </div>
+                    <div class="content">
+                        <p class="transition hidden">Deckard Cain is a Horadric scholar well versed in obscure lore and history of the arcane.</p>
+                    </div>
+                    <div class="title">
+                        <i class="dropdown icon"></i> What is his role in Diablo video game series?
+                    </div>
+                    <div class="content">
+                        <p class="transition hidden">He identifies items for a cost and gives the player background info for quests.</p>
+                    </div>
+                    <div class="title">
+                        <i class="dropdown icon"></i> Here are some of his quotes.
+                    </div>
+                    <div class="content">
+                        <p class="transition hidden"><q>As a token of my gratitude, I will identify items for you at no charge.</q></p>
+                        <p class="transition hidden"><q>Quickly in and quickly out is all the advice I can give you.</q></p>
+                        <p class="transition hidden"><q>Ah, Anya. Such a fine example of feminine strength...
+						  								She reminds me of the Zakarum priestesses I knew in my youth.
+						  								They don't take vows of chastity, you know.</q></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui divided grid">
+        <div class="four wide column">Dziwna stronka. Układ jest ale brak zawartości. (Tu się nie dokleja po prawej)</div>
+        <div class="eight wide column">Bo twórca niespecjalnie miał pomysł na zawartość. Ale długa ta kolumna tutaj. Bo Semantic UI działa na 16 kolumnach!</div>
+        <div class="four wide column">A tak pisać dziwne rzeczy na siłę to bez sensu.</div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="semantic/dist/semantic.min.js"></script>
+    <script src="semantic/dist/components/accordion.js"></script>
+    <script language='javascript'>
+        $(document).ready(function() {
+            $('.ui.accordion').accordion();
+        });
+    </script>
+</body>
+<footer>
+    <div class="row">
+        <div class="ui three column grid">
+            <div class="column">
+                <div class="ui fluid card">
+                    <div class="image">
+                        <img src="img/german.jpg" alt="German Shepherd" height="275px">
+                    </div>
+                    <div class="content">
+                        <a class="header">Owczarek niemiecki</a>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui fluid card">
+                    <div class="image">
+                        <img src="img/golden.jpg" alt="Golden Retriever" height="275px">
+                    </div>
+                    <div class="content">
+                        <a class="header">Golden Retriever</a>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui fluid card">
+                    <div class="image">
+                        <img src="img/inuit.jpg" alt="Northern Inuit" height="275px">
+                    </div>
+                    <div class="content">
+                        <a class="header">Norhern Inuit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>
