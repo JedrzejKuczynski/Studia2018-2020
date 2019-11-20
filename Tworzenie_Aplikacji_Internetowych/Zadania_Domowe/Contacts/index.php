@@ -83,46 +83,63 @@ $res = $mysqli->query("SELECT * FROM contact ORDER BY " . $column . ' ' . $sort_
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>PhoneBook</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     </head>
 
     <body>
+    	<div class="container-fluid">
+			<div class="row">
+				<div class="col-12">
+			        <form action="index.php" method="post">
+			        	<div class="form-group">
+				            <label for="firstname">First name: <input class="form-control" name="firstname" value="<?= $firstname ?>" type="text"></label>
+				            <label for="lastname">Last name: <input class="form-control" name="lastname" value="<?= $lastname ?>" type="text"></label>
+				            <label for="phone">Phone: <input class="form-control" name="phone" value="<?= $phone ?>" type="text"></label>
+				            <label for="image">Image: <input class="form-control" name="image" value="<?= $image ?>" type="text"></label>
+				            <input type="hidden" name="id" value="<?= $id ?>">
+			        	</div>
+			        	<button type="submit" class="btn btn-dark">Save</button>
+			        </form>
+		    	</div>
+	    	</div>
 
-        <form action="index.php" method="post">
-            <label for="firstname">First name: <input name="firstname" value="<?= $firstname ?>" type="text"></label>
-            <label for="lastname">Last name: <input name="lastname" value="<?= $lastname ?>" type="text"></label>
-            <label for="phone">Phone: <input name="phone" value="<?= $phone ?>" type="text"></label>
-            <label for="image">Image: <input name="image" value="<?= $image ?>" type="text"></label>
-            <input type="hidden" name="id" value="<?= $id ?>">
-            <input type="submit" value="Save">
-        </form>
+	        <br>
+			
+			<div class="row">
+				<div class="col-12">
+			        <table class="table table-striped table-hover table-bordered">
+			        	<thead class="thead-dark">
+				        	<tr>
+				        		<th scope="col"><a class="text-white" href="index.php?&column=id&order=<?php echo $asc_or_desc; ?>">ID Number<i class="fa fa-sort<?php echo $column == 'id' ? '-' . $arrow : ''; ?>"></i></a></th>
+				        		<th scope="col"><a class="text-white" href="index.php?&column=firstname&order=<?php echo $asc_or_desc; ?>">First Name<i class="fa fa-sort<?php echo $column == 'firstname' ? '-' . $arrow : ''; ?>"></i></a></th>
+				        		<th scope="col"><a class="text-white" href="index.php?&column=lastname&order=<?php echo $asc_or_desc; ?>">Last Name<i class="fa fa-sort<?php echo $column == 'lastname' ? '-' . $arrow : ''; ?>"></i></a></th>
+				        		<th scope="col"><a class="text-white" href="index.php?&column=phone&order=<?php echo $asc_or_desc; ?>">Phone Number<i class="fa fa-sort<?php echo $column == 'phone' ? '-' . $arrow : ''; ?>"></i></a></th>
+				        		<th scope="col" class="text-white">Image</th>
+				        		<th scope="col" class="text-white">Action</th>
+				        	</tr>
+			        	</thead>
+			        	<tbody>
+				            <?php while ($row = $res->fetch_assoc()): ?>
+				                <tr>
+				                    <td><?= $row['id'] ?></td>
+				                    <td><?= $row['firstname'] ?></td>
+				                    <td><?= $row['lastname'] ?></td>
+				                    <td><?= $row['phone'] ?></td>
+				                    <td>
+				                        <img src="<?= $row['image'] ?>" style="width: 100%; height: auto; max-width: 100px;">
+				                    </td>
+				                    <td>
+				                        <a href="index.php?o=update&id=<?= $row['id'] ?>"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+				                        <a href="index.php?o=delete&id=<?= $row['id'] ?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+				                    </td>
+				                </tr>
+				            <?php endwhile; ?>
+			        	</tbody>
+			        </table>
+			    </div>
+	    	</div>
 
-        <br>
-
-        <table border="1" cellpadding="10" cellspacing="0">
-        	<tr>
-        		<th><a href="index.php?&column=id&order=<?php echo $asc_or_desc; ?>">ID Number<i class="fa fa-sort<?php echo $column == 'id' ? '-' . $arrow : ''; ?>"></i></a></th>
-        		<th><a href="index.php?&column=firstname&order=<?php echo $asc_or_desc; ?>">First Name<i class="fa fa-sort<?php echo $column == 'firstname' ? '-' . $arrow : ''; ?>"></i></a></th>
-        		<th><a href="index.php?&column=lastname&order=<?php echo $asc_or_desc; ?>">Last Name<i class="fa fa-sort<?php echo $column == 'lastname' ? '-' . $arrow : ''; ?>"></i></a></th>
-        		<th><a href="index.php?&column=phone&order=<?php echo $asc_or_desc; ?>">Phone Number<i class="fa fa-sort<?php echo $column == 'phone' ? '-' . $arrow : ''; ?>"></i></a></th>
-        		<th>Image</th>
-        		<th>Action</th>
-        	</tr>
-            <?php while ($row = $res->fetch_assoc()): ?>
-                <tr>
-                    <td><?= $row['id'] ?></td>
-                    <td><?= $row['firstname'] ?></td>
-                    <td><?= $row['lastname'] ?></td>
-                    <td><?= $row['phone'] ?></td>
-                    <td>
-                        <img src="<?= $row['image'] ?>" style="width: 100%; height: auto; max-width: 100px;">
-                    </td>
-                    <td>
-                        <a href="index.php?o=update&id=<?= $row['id'] ?>"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                        <a href="index.php?o=delete&id=<?= $row['id'] ?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </table>
+    	</div>
 
     </body>
 
