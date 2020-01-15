@@ -1,0 +1,4 @@
+1. Przyrównać chromosomy.
+2. Na podstawie adnotacji znaleźć geny synteniczne.
+3. Pobrać geny ortologiczne.
+4. "Ile można znaleźć genów ortologicznych na podstawie samej syntenii?".
