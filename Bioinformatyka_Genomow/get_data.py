@@ -77,10 +77,49 @@ def get_genes(database_first, database_second, gene_ids):
     return list(zip(genes_first, genes_second))
 
 
+def analysis(found_orthologs, first_chr_length, second_chr_length, allowed_diff):
+    shared_synteny = []
+    reversed_synteny = []
+    no_synteny = []
+
+    for first, second in found_orthologs:
+        if first[3] == second[3]:
+            start_diff = abs(first[1] - second[1])
+            end_diff = abs(first[2] - second[2])
+            if start_diff <= allowed_diff and end_diff <= allowed_diff:
+                shared_synteny.append((first, second))
+            else:
+                no_synteny.append((first, second))
+        elif first[3] == '-' and second[3] == '+':
+            plus_start = first_chr_length - first[2]
+            plus_end = first_chr_length - first[1]
+            start_diff = abs(plus_start - second[1])
+            end_diff = abs(plus_end - second[2])
+            if start_diff <= allowed_diff and end_diff <= allowed_diff:
+                reversed_synteny.append((first, second))
+            else:
+                no_synteny.append((first, second))
+        else:
+            plus_start = second_chr_length - second[2]
+            plus_end = second_chr_length - second[1]
+            start_diff = abs(plus_start - first[1])
+            end_diff = abs(plus_end - first[2])
+            if start_diff <= allowed_diff and end_diff <= allowed_diff:
+                reversed_synteny.append((first, second))
+            else:
+                no_synteny.append((first, second))
+
+    return shared_synteny, reversed_synteny, no_synteny
+
+
 sheep_ids, goat_ids = get_gene_ids("ovis_aries_chr13_orthogenes_capra_hircus.txt")
 orthologs = list(zip(sheep_ids, goat_ids))
 
 found_orthologs = get_genes("ovis_aries_chr13.db", "capra_hircus_chr13.db", orthologs)
 
-for sheep, goat in found_orthologs:
-    print(sheep, goat)
+# for sheep, goat in found_orthologs:
+   # print(sheep, goat)
+
+shared_synteny, reversed_synteny, no_synteny = analysis(found_orthologs, 94_726_778, 94_672_733, 100_000)
+print(len(found_orthologs))
+print(ss := len(shared_synteny), rs := len(reversed_synteny), ns := len(no_synteny), ss + rs + ns)
