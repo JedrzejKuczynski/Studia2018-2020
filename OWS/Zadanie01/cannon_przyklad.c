@@ -3,8 +3,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define n 2000
+#define PP 2
+#define P 4
 
-const int n = 2000, PP = 2, P = 4;  // wielkosc mnozonych macierzy, pierwiastek z liczby procesow, liczba procesow
+
+// const int n = 2000, PP = 2, P = 4;  // wielkosc mnozonych macierzy, pierwiastek z liczby procesow, liczba procesow
 
 float a[n / PP][n / PP], b[n / PP][n / PP], c[n / PP][n / PP];
 float aa[n / PP][n / PP], bb[n / PP][n / PP];
@@ -37,7 +41,9 @@ int main(int argc, char **argv) {
     if(my_rank == 0)
         startwtime1 = MPI_Wtime();  // czas w sekundach
 
-    // wczytanie danych przez proces rank=0
+    // ---- CZYTANIE DANYCH ---- //
+
+    // wczytanie danych przez proces rank = 0
     if(my_rank == 0) {
         plik = fopen("liczby.txt","r");
         if(plik == NULL) {
@@ -72,7 +78,7 @@ int main(int argc, char **argv) {
     // konieczne przygotowanie danych wejsciowych w postaci 
     // zgodnej ze poczatkowym sposobem dystrybucji szachownicowej
 
-    for(int kk =1; kk< PP*PP; kk++) {
+    for(int kk = 1; kk < PP*PP; kk++) {
         for(int i = 0; i < n / PP; i++)
             for(int j = 0; j < n / PP; j++) {
                 fscanf(plik,"%f", &a[i][j]);
@@ -90,9 +96,9 @@ int main(int argc, char **argv) {
             fscanf(plik,"%f", &a[i][j]);
         }
 
-// czyta b do wyslania do innych procesow
-// konieczne przygotowanie danych wejsciowych w postaci 
-// zgodnej ze poczatkowym sposobem dystrybucji szachownicowej
+    // czyta b do wyslania do innych procesow
+    // konieczne przygotowanie danych wejsciowych w postaci 
+    // zgodnej ze poczatkowym sposobem dystrybucji szachownicowej
 
     for(int kk = 1; kk < PP*PP; kk++) {  // kolejne identyfikatory procesow
         for(int i = 0; i < n / PP; i++)
@@ -115,33 +121,68 @@ int main(int argc, char **argv) {
     fclose(plik);
     }else {
 		MPI_Irecv(a, n*n / PP / PP, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqRecv);
-		//test konca komunikacji
+		// test konca komunikacji
 		MPI_Irecv(b, n*n / PP / PP, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, &reqRecv[1]);
-		//test konca komunikacji
+		// test konca komunikacji
     }
 
-//przygotowanie tablicy wynikowej
+    // ---- KONIEC CZYTANIA DANYCH ---- //
 
-    row = my_rank / PP; col = my_rank % PP;
+    // przygotowanie tablicy wynikowej
+
+    row = my_rank / PP;
+    col = my_rank % PP;
 
     for(int i = 0; i < n / PP; i++)
         for(int j = 0; j < n / PP; j++) {
-            c[i][j]=0;
+            c[i][j] = 0;
         }
 
     if(my_rank == 0)
         startwtime2 = MPI_Wtime();  //czas w sekundach
 
-// obliczenia iloczynu macierzy zgodnie z algorytmem Cannona 
-// do uzupenienia
+    // obliczenia iloczynu macierzy zgodnie z algorytmem Cannona 
+    // do uzupelnienia
+
+    pra = aa;
+    prb = bb;
+    psa = a;
+    psb = b;
+
+    for(int kk = 0; k < PP; kk+) { // Iteracja przetwarzania
+        for(int i = 0; i < n / PP; i++)
+            for(int k = 0; k < n / PP; k++)
+                for(int j = 0; j < n / PP; j++)
+                    c[i][j] += psa[i][k] * psb[k][j];
+
+        MPI_Irecv(pra, n*n / PP / PP, MPI_FLOAT, prawy, tag, MPI_COMM_WORLD, reqRecv);
+        MPI_Irecv(prb, n*n / PP / PP, MPI_FLOAT, dolny, tag, MPI_COMM_WORLD, &reqRecv[1]);
+        MPI_Isend(psa, n*n / PP / PP, MPI_FLOAT, górny, tag, MPI_COMM_WORLD, reqSend);
+        MPI_Isend(psb, n*n / PP / PP, MPI_FLOAT, lewy, tag, MPI_COMM_WORLD, &reqSend[1]);
+
+        MPI_Wait(reqRecv, statRecv);
+        MPI_Wait(&reqRecv[1], &statRecv[1]);
+
+        if(mod = ((mod + 1) % 2)) {
+            pra = a;
+            prb = b;
+            psa = aa;
+            psb = bb;
+        }else {
+            pra = aa;
+            prb = bb;
+            psa = a;
+            psb = b;
+        }
+    }
 
     if(my_rank == 0) {
 	   endwtime = MPI_Wtime();
-       printf("Calkowity czas przetwarzania wynosi %f sekund\n",endwtime - startwtime1);
+       printf("Calkowity czas przetwarzania wynosi %f sekund\n", endwtime - startwtime1);
        printf("Calkowity czas obliczen wynosi %f sekund\n", endwtime - startwtime2);
     }
 
-// test poprawnosci wyniku - wynik do pliku lub inny sposob
+    // test poprawnosci wyniku - wynik do pliku lub inny sposob
 
     if(my_rank == 0) {
         plik_out = fopen("wynik.txt", "w");
