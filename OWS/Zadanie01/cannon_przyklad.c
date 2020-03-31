@@ -3,18 +3,32 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define n 2000
-#define PP 2
-#define P 4
+#define n 5
+#define PP 5
+#define P 25
 
 
 // const int n = 2000, PP = 2, P = 4;  // wielkosc mnozonych macierzy, pierwiastek z liczby procesow, liczba procesow
 
-float a[n / PP][n / PP], b[n / PP][n / PP], c[n / PP][n / PP];
-float aa[n / PP][n / PP], bb[n / PP][n / PP];
-float (*psa)[n / PP], (*psb)[n / PP], (*pra)[n / PP], (*prb)[n / PP];
+float a[n][n], b[n][n], c[n][n];  // a[n / PP][n / PP], b[n / PP][n / PP], c[n / PP][n / PP];
+float aa[n / PP][n / PP], bb[n / PP][n / PP], cc[n / PP][n / PP];
 
 double startwtime1,startwtime2, endwtime;
+
+void send_submatrices(int pp, int submatrix_dim, float matrix[n][n], int values_count, MPI_Request* reqSend, int tag) {
+
+    for(int i = 0; i < pp; i++)
+        for(int j = 0; j < pp; j++) {
+            float tmp_submatrix[submatrix_dim][submatrix_dim];
+            int process_rank = i * pp + j;
+
+            for(int ii = i * submatrix_dim; ii < (i + 1) * submatrix_dim; ii++)
+                for(int jj = j * submatrix_dim; jj < (j + 1) * submatrix_dim; jj++)
+                    tmp_submatrix[ii - (i * submatrix_dim)][jj - (j * submatrix_dim)] = matrix[ii][jj];
+
+            MPI_Isend(&tmp_submatrix, values_count, MPI_FLOAT, process_rank, tag, MPI_COMM_WORLD, reqSend);
+        }
+}
 
 int main(int argc, char **argv) {
 
@@ -26,14 +40,14 @@ int main(int argc, char **argv) {
 	int data_received = -1;
 	int tag = 101;
 	int koniec;
-	
+
 	MPI_Status  statRecv[2];
 	MPI_Request reqSend[2], reqRecv[2];
 
     MPI_Init(&argc, &argv);
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &ncpus); 
+	MPI_Comm_size(MPI_COMM_WORLD, &ncpus);
 
     if(my_rank == 0)
         printf("obliczenia metoda Cannona dla tablicy %d x %d elementów \n", n, n);
@@ -45,15 +59,15 @@ int main(int argc, char **argv) {
 
     // wczytanie danych przez proces rank = 0
     if(my_rank == 0) {
-        plik = fopen("liczby.txt","r");
+        plik = fopen("liczby.txt", "r");
         if(plik == NULL) {
             printf("Blad otwarcia pliku \"liczby.txt\"\n");
-            koniec=1;
+            koniec = 1;
             MPI_Bcast(&koniec, 1, MPI_INT, 0, MPI_COMM_WORLD);
             MPI_Finalize();
             exit(0);
         }else {
-            koniec=0;
+            koniec = 0;
             MPI_Bcast(&koniec, 1, MPI_INT, 0, MPI_COMM_WORLD);
         }
     }else {
@@ -73,118 +87,159 @@ int main(int argc, char **argv) {
     }
 
     if(my_rank == 0) {
-    // w pliku danych musi wystarczyc
-    // czyta a do wyslania do innych procesow
-    // konieczne przygotowanie danych wejsciowych w postaci 
-    // zgodnej ze poczatkowym sposobem dystrybucji szachownicowej
-
-    for(int kk = 1; kk < PP*PP; kk++) {
-        for(int i = 0; i < n / PP; i++)
-            for(int j = 0; j < n / PP; j++) {
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++) {
                 fscanf(plik,"%f", &a[i][j]);
             }
 
-        MPI_Isend(a, n*n / PP / PP, MPI_FLOAT, kk, tag, MPI_COMM_WORLD, reqSend);
+        fclose(plik);
 
-    // test konca komunikacji
-    }
-
-    // czyta dla siebie
-
-    for(int i = 0; i < n / PP; i++)
-        for(int j = 0; j < n / PP; j++) {
-            fscanf(plik,"%f", &a[i][j]);
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++)
+                printf("%f\t", a[i][j]);
+            printf("\n");
         }
 
-    // czyta b do wyslania do innych procesow
-    // konieczne przygotowanie danych wejsciowych w postaci 
-    // zgodnej ze poczatkowym sposobem dystrybucji szachownicowej
+        send_submatrices(PP, n / PP, a, n*n / P, reqSend, tag);
 
-    for(int kk = 1; kk < PP*PP; kk++) {  // kolejne identyfikatory procesow
-        for(int i = 0; i < n / PP; i++)
-            for(int j = 0; j < n / PP; j++) {
+        plik = fopen("liczby.txt", "r");
+
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++) {
                 fscanf(plik,"%f", &b[i][j]);
-            }
-
-        MPI_Isend(b, n*n / PP / PP, MPI_FLOAT, kk, tag, MPI_COMM_WORLD,reqSend);
-
-    //test konca komunikacji			
-    }
-
-    // czyta dla siebie
-
-    for(int i = 0; i < n / PP; i++)
-        for(int j = 0; j < n / PP; j++) {
-            fscanf(plik,"%f",&b[i][j]);
         }
 
-    fclose(plik);
-    }else {
-		MPI_Irecv(a, n*n / PP / PP, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqRecv);
-		// test konca komunikacji
-		MPI_Irecv(b, n*n / PP / PP, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, &reqRecv[1]);
-		// test konca komunikacji
+        printf("\n\n");
+
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++)
+                printf("%f\t", b[i][j]);
+            printf("\n");
+        }
+
+        send_submatrices(PP, n / PP, b, n*n / P, &reqSend[1], tag);
+
+        fclose(plik);
     }
 
-    // ---- KONIEC CZYTANIA DANYCH ---- //
+	MPI_Irecv(aa, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqRecv);
+    MPI_Wait(reqRecv, statRecv);
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    // przygotowanie tablicy wynikowej
+	MPI_Irecv(bb, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, &reqRecv[1]);
+    MPI_Wait(&reqRecv[1], &statRecv[1]);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    for(int i = 0; i < n / PP; i++)
+        for(int j = 0; j < n / PP; j++)
+            cc[i][j] = 0;
+
+    // ---- MNOZENIE CANNONA ---- //
 
     row = my_rank / PP;
     col = my_rank % PP;
 
-    for(int i = 0; i < n / PP; i++)
-        for(int j = 0; j < n / PP; j++) {
-            c[i][j] = 0;
-        }
+    int right = (row * PP) + (col + 1) % PP;
+    int bottom = ((row + 1) % PP) * PP + col;
+    int top = ((row + PP - 1) % PP) * PP + col;
+    int left = (row * PP) + (col - 1 + PP) % PP;
 
     if(my_rank == 0)
         startwtime2 = MPI_Wtime();  //czas w sekundach
 
-    // obliczenia iloczynu macierzy zgodnie z algorytmem Cannona 
-    // do uzupelnienia
+    for(int i = 0; i < PP; i++) {
+        if(row > i) {
+            MPI_Isend(aa, n*n / P, MPI_FLOAT, left, tag, MPI_COMM_WORLD, reqSend);
+            MPI_Irecv(aa, n*n / P, MPI_FLOAT, right, tag, MPI_COMM_WORLD, reqRecv);
+            MPI_Wait(reqRecv, statRecv);
+        }
 
-    pra = aa;
-    prb = bb;
-    psa = a;
-    psb = b;
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
 
-    for(int kk = 0; k < PP; kk+) { // Iteracja przetwarzania
+    for(int i = 0; i < PP; i++) {
+        if(col > i) {
+            MPI_Isend(bb, n*n / P, MPI_FLOAT, top, tag, MPI_COMM_WORLD, &reqSend[1]);
+            MPI_Irecv(bb, n*n / P, MPI_FLOAT, bottom, tag, MPI_COMM_WORLD, &reqRecv[1]);
+            MPI_Wait(&reqRecv[1], &statRecv[1]);
+        }
+
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+
+
+    for(int pr = 0; pr < PP; pr++) { // Iteracja przetwarzania
         for(int i = 0; i < n / PP; i++)
-            for(int k = 0; k < n / PP; k++)
-                for(int j = 0; j < n / PP; j++)
-                    c[i][j] += psa[i][k] * psb[k][j];
+            for(int j = 0; j < n / PP; j++)
+                for(int k = 0; k < n / PP; k++)
+                    cc[i][j] += aa[i][k] * bb[k][j];
 
-        MPI_Irecv(pra, n*n / PP / PP, MPI_FLOAT, prawy, tag, MPI_COMM_WORLD, reqRecv);
-        MPI_Irecv(prb, n*n / PP / PP, MPI_FLOAT, dolny, tag, MPI_COMM_WORLD, &reqRecv[1]);
-        MPI_Isend(psa, n*n / PP / PP, MPI_FLOAT, górny, tag, MPI_COMM_WORLD, reqSend);
-        MPI_Isend(psb, n*n / PP / PP, MPI_FLOAT, lewy, tag, MPI_COMM_WORLD, &reqSend[1]);
+        if(pr < PP - 1) {
+            MPI_Isend(aa, n*n / P, MPI_FLOAT, left, tag, MPI_COMM_WORLD, reqSend);
+            MPI_Irecv(aa, n*n / P, MPI_FLOAT, right, tag, MPI_COMM_WORLD, reqRecv);
+            MPI_Wait(reqRecv, statRecv);
+            MPI_Barrier(MPI_COMM_WORLD);
 
-        MPI_Wait(reqRecv, statRecv);
-        MPI_Wait(&reqRecv[1], &statRecv[1]);
-
-        if(mod = ((mod + 1) % 2)) {
-            pra = a;
-            prb = b;
-            psa = aa;
-            psb = bb;
-        }else {
-            pra = aa;
-            prb = bb;
-            psa = a;
-            psb = b;
+            MPI_Isend(bb, n*n / P, MPI_FLOAT, top, tag, MPI_COMM_WORLD, &reqSend[1]);
+            MPI_Irecv(bb, n*n / P, MPI_FLOAT, bottom, tag, MPI_COMM_WORLD, &reqRecv[1]);
+            MPI_Wait(&reqRecv[1], &statRecv[1]);
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 
     if(my_rank == 0) {
-	   endwtime = MPI_Wtime();
-       printf("Calkowity czas przetwarzania wynosi %f sekund\n", endwtime - startwtime1);
-       printf("Calkowity czas obliczen wynosi %f sekund\n", endwtime - startwtime2);
-    }
-
-    // test poprawnosci wyniku - wynik do pliku lub inny sposob
+        endwtime = MPI_Wtime();
+        printf("Calkowity czas przetwarzania wynosi %f sekund\n", endwtime - startwtime1);
+        printf("Calkowity czas obliczen wynosi %f sekund\n", endwtime - startwtime2);
+    } else
+        MPI_Isend(cc, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqSend);
 
     if(my_rank == 0) {
+
+        printf("Wszedlem w odbieranie!\n\n");
+
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++)
+                c[i][j] = 0;
+
+        int start_row = (my_rank / PP) * (n / PP);
+        int start_col = (my_rank % PP) * (n / PP);
+
+        for(int i = 0; i < n / PP; i++)
+            for(int j = 0; j < n / PP; j++) {
+                printf("%f\t", cc[i][j]);
+                c[i + start_row][j + start_col] = cc[i][j];
+            }
+
+            printf("\n");
+
+        for(int r = 1; r < P; r++) {
+            MPI_Recv(cc, n*n / P, MPI_FLOAT, r, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            start_row = (r / PP) * (n / PP);
+            start_col = (r % PP) * (n / PP);
+
+            for(int i = 0; i < n / PP; i++)
+                for(int j = 0; j < n / PP; j++) {
+                    printf("%f\t", cc[i][j]);
+                    c[i + start_row][j + start_col] = cc[i][j];
+                }
+            printf("\n");
+        }
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    if(my_rank == 0) {
+
+        printf("Wszedlem w zapis!\n\n");
+
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++)
+                printf("%f\t", c[i][j]);
+            printf("\n");
+        }
+
         plik_out = fopen("wynik.txt", "w");
 
         if(plik_out == NULL) {
@@ -192,8 +247,8 @@ int main(int argc, char **argv) {
             exit(0);
         }
 
-        for(int i = 0; i < n / PP; i++) {
-		  for(int j = 0; j < n / PP ; j++)
+        for(int i = 0; i < n; i++) {
+		  for(int j = 0; j < n; j++)
             fprintf(plik_out, "%6.1f", c[i][j]);
 
 		fprintf(plik_out, "\n");

@@ -13,8 +13,8 @@ int main(int argc, char **argv) {
       exit(0);
    }
  
-   for(i = 0; i < 2000; i++) {
-      for(j = 0; j < 2000; j++)
+   for(i = 0; i < 4; i++) {
+      for(j = 0; j < 4; j++)
          fprintf(plik, "%6.1f", (float)i+j);
 
       fprintf(plik, "\n");
