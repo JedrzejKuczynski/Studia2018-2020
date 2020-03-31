@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define n 5
-#define PP 5
-#define P 25
+#define n 4
+#define PP 4
+#define P 16
 
 
 // const int n = 2000, PP = 2, P = 4;  // wielkosc mnozonych macierzy, pierwiastek z liczby procesow, liczba procesow
@@ -94,12 +94,6 @@ int main(int argc, char **argv) {
 
         fclose(plik);
 
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++)
-                printf("%f\t", a[i][j]);
-            printf("\n");
-        }
-
         send_submatrices(PP, n / PP, a, n*n / P, reqSend, tag);
 
         plik = fopen("liczby.txt", "r");
@@ -107,14 +101,6 @@ int main(int argc, char **argv) {
         for(int i = 0; i < n; i++)
             for(int j = 0; j < n; j++) {
                 fscanf(plik,"%f", &b[i][j]);
-        }
-
-        printf("\n\n");
-
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++)
-                printf("%f\t", b[i][j]);
-            printf("\n");
         }
 
         send_submatrices(PP, n / PP, b, n*n / P, &reqSend[1], tag);
@@ -196,8 +182,6 @@ int main(int argc, char **argv) {
 
     if(my_rank == 0) {
 
-        printf("Wszedlem w odbieranie!\n\n");
-
         for(int i = 0; i < n; i++)
             for(int j = 0; j < n; j++)
                 c[i][j] = 0;
@@ -206,12 +190,8 @@ int main(int argc, char **argv) {
         int start_col = (my_rank % PP) * (n / PP);
 
         for(int i = 0; i < n / PP; i++)
-            for(int j = 0; j < n / PP; j++) {
-                printf("%f\t", cc[i][j]);
+            for(int j = 0; j < n / PP; j++)
                 c[i + start_row][j + start_col] = cc[i][j];
-            }
-
-            printf("\n");
 
         for(int r = 1; r < P; r++) {
             MPI_Recv(cc, n*n / P, MPI_FLOAT, r, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -220,19 +200,14 @@ int main(int argc, char **argv) {
             start_col = (r % PP) * (n / PP);
 
             for(int i = 0; i < n / PP; i++)
-                for(int j = 0; j < n / PP; j++) {
-                    printf("%f\t", cc[i][j]);
+                for(int j = 0; j < n / PP; j++)
                     c[i + start_row][j + start_col] = cc[i][j];
-                }
-            printf("\n");
         }
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
 
     if(my_rank == 0) {
-
-        printf("Wszedlem w zapis!\n\n");
 
         for(int i = 0; i < n; i++) {
             for(int j = 0; j < n; j++)
