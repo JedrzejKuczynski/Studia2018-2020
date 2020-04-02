@@ -22,11 +22,15 @@ void send_submatrices(int pp, int submatrix_dim, float matrix[n][n], int values_
             float tmp_submatrix[submatrix_dim][submatrix_dim];
             int process_rank = i * pp + j;
 
-            for(int ii = i * submatrix_dim; ii < (i + 1) * submatrix_dim; ii++)
-                for(int jj = j * submatrix_dim; jj < (j + 1) * submatrix_dim; jj++)
-                    tmp_submatrix[ii - (i * submatrix_dim)][jj - (j * submatrix_dim)] = matrix[ii][jj];
+            if(process_rank == 0)
+                continue;
+            else {
+                for(int ii = i * submatrix_dim; ii < (i + 1) * submatrix_dim; ii++)
+                    for(int jj = j * submatrix_dim; jj < (j + 1) * submatrix_dim; jj++)
+                        tmp_submatrix[ii - (i * submatrix_dim)][jj - (j * submatrix_dim)] = matrix[ii][jj];
 
-            MPI_Isend(&tmp_submatrix, values_count, MPI_FLOAT, process_rank, tag, MPI_COMM_WORLD, reqSend);
+                MPI_Isend(&tmp_submatrix, values_count, MPI_FLOAT, process_rank, tag, MPI_COMM_WORLD, reqSend);
+            }
         }
 }
 
@@ -94,6 +98,10 @@ int main(int argc, char **argv) {
 
         fclose(plik);
 
+        for(int ii = my_rank * (n / PP); ii < (my_rank + 1) * (n / PP); ii++)
+            for(int jj = my_rank * (n / PP); jj < (my_rank + 1) * (n / PP); jj++)
+                aa[ii - (my_rank * (n / PP))][jj - (my_rank * (n / PP))] = a[ii][jj];
+
         send_submatrices(PP, n / PP, a, n*n / P, reqSend, tag);
 
         plik = fopen("liczby.txt", "r");
@@ -103,17 +111,22 @@ int main(int argc, char **argv) {
                 fscanf(plik,"%f", &b[i][j]);
         }
 
-        send_submatrices(PP, n / PP, b, n*n / P, &reqSend[1], tag);
-
         fclose(plik);
+
+        for(int ii = my_rank * (n / PP); ii < (my_rank + 1) * (n / PP); ii++)
+            for(int jj = my_rank * (n / PP); jj < (my_rank + 1) * (n / PP); jj++)
+                bb[ii - (my_rank * (n / PP))][jj - (my_rank * (n / PP))] = b[ii][jj];
+
+        send_submatrices(PP, n / PP, b, n*n / P, &reqSend[1], tag);
+    }else {
+
+    	MPI_Irecv(aa, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqRecv);
+        MPI_Wait(reqRecv, statRecv);
+
+    	MPI_Irecv(bb, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, &reqRecv[1]);
+        MPI_Wait(&reqRecv[1], &statRecv[1]);
     }
 
-	MPI_Irecv(aa, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqRecv);
-    MPI_Wait(reqRecv, statRecv);
-    MPI_Barrier(MPI_COMM_WORLD);
-
-	MPI_Irecv(bb, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, &reqRecv[1]);
-    MPI_Wait(&reqRecv[1], &statRecv[1]);
     MPI_Barrier(MPI_COMM_WORLD);
 
     for(int i = 0; i < n / PP; i++)
