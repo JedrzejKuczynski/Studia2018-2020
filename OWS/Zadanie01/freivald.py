@@ -21,4 +21,4 @@ for _ in range(100_000):
 if all(output):
     print("Mnozenie macierzy poprawne!")
 else:
-    print("Mnozenei macierzy niepoprawne!")
+    print("Mnozenie macierzy niepoprawne!")

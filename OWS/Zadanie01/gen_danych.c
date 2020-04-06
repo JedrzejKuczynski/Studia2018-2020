@@ -15,8 +15,8 @@ int main(int argc, char **argv) {
       exit(0);
    }
 
-   for(i = 0; i < 910; i++) {
-      for(j = 0; j < 910; j++)
+   for(i = 0; i < 2000; i++) {
+      for(j = 0; j < 2000; j++)
          fprintf(plik, "%f ", (float)numbers[i % 10]);
 
       fprintf(plik, "\n");

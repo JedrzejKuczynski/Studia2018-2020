@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define n 910
-#define PP 13
-#define P 169
+#define n 4000
+#define PP 2
+#define P 4
 
 
 // const int n = 2000, PP = 2, P = 4;  // wielkosc mnozonych macierzy, pierwiastek z liczby procesow, liczba procesow
@@ -14,25 +14,6 @@ float a[n][n], b[n][n], c[n][n];
 float aa[n / PP][n / PP], bb[n / PP][n / PP], cc[n / PP][n / PP];
 
 double startwtime1,startwtime2, endwtime;
-
-void send_submatrices(int pp, int submatrix_dim, float matrix[n][n], int values_count, MPI_Request* reqSend, int tag) {
-
-    for(int i = 0; i < pp; i++)
-        for(int j = 0; j < pp; j++) {
-            float tmp_submatrix[submatrix_dim][submatrix_dim];
-            int process_rank = i * pp + j;
-
-            if(process_rank == 0)
-                continue;
-            else {
-                for(int ii = i * submatrix_dim; ii < (i + 1) * submatrix_dim; ii++)
-                    for(int jj = j * submatrix_dim; jj < (j + 1) * submatrix_dim; jj++)
-                        tmp_submatrix[ii - (i * submatrix_dim)][jj - (j * submatrix_dim)] = matrix[ii][jj];
-
-                MPI_Isend(&tmp_submatrix, values_count, MPI_FLOAT, process_rank, tag, MPI_COMM_WORLD, reqSend);
-            }
-        }
-}
 
 int main(int argc, char **argv) {
 
@@ -98,11 +79,23 @@ int main(int argc, char **argv) {
 
         fclose(plik);
 
+        for(int i = 0; i < PP; i++)
+            for(int j = 0; j < PP; j++) {
+                float tmp_submatrix[n / PP][n / PP];
+                int process_rank = i * PP + j;
+
+                if(process_rank != 0) {
+                    for(int ii = i * (n / PP); ii < (i + 1) * (n / PP); ii++)
+                        for(int jj = j * (n / PP); jj < (j + 1) * (n / PP); jj++)
+                            tmp_submatrix[ii - (i * (n / PP))][jj - (j * (n / PP))] = a[ii][jj];
+
+                MPI_Isend(tmp_submatrix, n*n / P, MPI_FLOAT, process_rank, tag, MPI_COMM_WORLD, reqSend);
+            }
+        }
+
         for(int ii = my_rank * (n / PP); ii < (my_rank + 1) * (n / PP); ii++)
             for(int jj = my_rank * (n / PP); jj < (my_rank + 1) * (n / PP); jj++)
                 aa[ii - (my_rank * (n / PP))][jj - (my_rank * (n / PP))] = a[ii][jj];
-
-        send_submatrices(PP, n / PP, a, n*n / P, reqSend, tag);
 
         plik = fopen("liczby.txt", "r");
 
@@ -113,11 +106,24 @@ int main(int argc, char **argv) {
 
         fclose(plik);
 
+        for(int i = 0; i < PP; i++)
+            for(int j = 0; j < PP; j++) {
+                float tmp_submatrix[n / PP][n / PP];
+                int process_rank = i * PP + j;
+
+                if(process_rank != 0) {
+                    for(int ii = i * (n / PP); ii < (i + 1) * (n / PP); ii++)
+                        for(int jj = j * (n / PP); jj < (j + 1) * (n / PP); jj++)
+                            tmp_submatrix[ii - (i * (n / PP))][jj - (j * (n / PP))] = b[ii][jj];
+
+                MPI_Isend(tmp_submatrix, n*n / P, MPI_FLOAT, process_rank, tag, MPI_COMM_WORLD, &reqSend[1]);
+            }
+        }
+
         for(int ii = my_rank * (n / PP); ii < (my_rank + 1) * (n / PP); ii++)
             for(int jj = my_rank * (n / PP); jj < (my_rank + 1) * (n / PP); jj++)
                 bb[ii - (my_rank * (n / PP))][jj - (my_rank * (n / PP))] = b[ii][jj];
 
-        send_submatrices(PP, n / PP, b, n*n / P, &reqSend[1], tag);
     }else {
 
     	MPI_Irecv(aa, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqRecv);
@@ -171,8 +177,8 @@ int main(int argc, char **argv) {
 
     for(int pr = 0; pr < PP; pr++) { // Iteracja przetwarzania
         for(int i = 0; i < n / PP; i++)
-            for(int j = 0; j < n / PP; j++)
-                for(int k = 0; k < n / PP; k++)
+            for(int k = 0; k < n / PP; k++)
+                for(int j = 0; j < n / PP; j++)
                     cc[i][j] += aa[i][k] * bb[k][j];
 
         if(pr < PP - 1) {
