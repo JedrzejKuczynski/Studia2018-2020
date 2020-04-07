@@ -12,6 +12,7 @@
 
 float a[n][n], b[n][n], c[n][n];
 float aa[n / PP][n / PP], bb[n / PP][n / PP], cc[n / PP][n / PP];
+float tmp_submatrix[n / PP][n / PP];
 
 double startwtime1,startwtime2, endwtime;
 
@@ -81,7 +82,6 @@ int main(int argc, char **argv) {
 
         for(int i = 0; i < PP; i++)
             for(int j = 0; j < PP; j++) {
-                float tmp_submatrix[n / PP][n / PP];
                 int process_rank = i * PP + j;
 
                 if(process_rank != 0) {
@@ -108,7 +108,6 @@ int main(int argc, char **argv) {
 
         for(int i = 0; i < PP; i++)
             for(int j = 0; j < PP; j++) {
-                float tmp_submatrix[n / PP][n / PP];
                 int process_rank = i * PP + j;
 
                 if(process_rank != 0) {
