@@ -2,15 +2,6 @@
 #include <mpi.h>
 #include <string.h>
 #include <omp.h>
-
-/* 
- * step = 1./(double)num_steps;
- 	for (i=0; i<num_steps; i++)
-	{
-		x = (i + .5)*step;
-		sum = sum + 4.0/(1.+ x*x);
-	}
-	*/
 	
 int num_steps = 1000000000;
 double step;
