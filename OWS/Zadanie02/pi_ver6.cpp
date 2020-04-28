@@ -16,6 +16,9 @@ int main(int argc, char* argv[])
 
     step = 1. / (double)num_steps;
 
+    for(i = 0; i < num_procs; i++)
+        sum[i] = 0;
+
     start = clock();
     start1 = omp_get_wtime();
 
