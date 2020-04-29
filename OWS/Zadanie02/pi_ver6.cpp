@@ -5,7 +5,7 @@
 
 long long num_steps = 1000000000;
 double step;
-int num_procs = 4;
+int num_procs = 2;
 
 int main(int argc, char* argv[])
 {
