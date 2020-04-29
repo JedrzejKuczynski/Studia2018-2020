@@ -24,11 +24,11 @@ int main(int argc, char* argv[])
         #pragma omp for
             for (i = 0; i < num_steps; i++) {
                 x = (i + .5) * step;
-                calc = 4.0 / (1. + x*x);
-
-                #pragma omp atomic
-                    sum += calc;
+                calc += 4.0 / (1. + x*x);
             }
+
+        #pragma omp atomic
+            sum += calc;
     }
 
     pi = sum * step;
