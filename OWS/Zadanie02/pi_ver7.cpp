@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
     volatile double sum[length];
     double start1, stop1;
     int i, id, word, s, jj;
+    FILE* results;
 
     cpu_set_t cpuset;
     pthread_t thread;
@@ -24,6 +25,8 @@ int main(int argc, char* argv[])
 
     for(i = 0; i < length; i++)
         sum[i] = 0;
+
+    results = fopen("eksperyment.txt", "w");
 
     for(int it = 0; it < (length - 1); it++) {
         start = clock();
@@ -75,9 +78,12 @@ int main(int argc, char* argv[])
         printf("Wykorzystany czas procesorow wynosi %f sekund\n", ((double)(stop - start)/(double)CLOCKS_PER_SEC));
         printf("Czas przetwarzania wynosi %f sekund\n\n", stop1 - start1);
 
+        fprintf(results, "%f %f\n", ((double)(stop - start)/(double)CLOCKS_PER_SEC), stop1 - start1);
+
         pi = 0;
 
     }
 
+    fclose(results);
     return 0;
 }
