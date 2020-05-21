@@ -36,16 +36,16 @@ int main(int argc, char* argv[]) {
     for(int i = m; i <= n; i++) {
         int root = (int)sqrt(i);
 
-        if(root < 2)
-            root = 2;
+        if(root >= 2) {
 
-        // printf("Dla liczby %d pierwiastek wynosi %d\n", i, root);
+            // printf("Dla liczby %d pierwiastek wynosi %d\n", i, root);
 
-        for(int j = 2; j <= root; j++) {
-            if(i % j == 0) {
-                // printf("Dziele %d przez %d\n", i, j);
-                prime_numbers[i - m] = true;
-                break;
+            for(int j = 2; j <= root; j++) {
+                if(i % j == 0) {
+                    // printf("Dziele %d przez %d\n", i, j);
+                    prime_numbers[i - m] = true;
+                    break;
+                }
             }
         }
     }
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 
         for(int i = 0; i < range; i++)
             if(!prime_numbers[i]) {
-                printf("%d ", i + 10);
+                printf("%d ", i + m);
                 counter++;
 
                 if(counter % 10 == 0)

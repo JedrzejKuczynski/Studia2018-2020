@@ -34,14 +34,13 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        primes_to_root = (bool*)malloc((n_root + 2)*sizeof(primes_to_root));
+        primes_to_root = (bool*)malloc((n_root + 2)*sizeof(primes_to_root));  // tablica okreslajaca liczby pierwsze do pierwiastka z N
+        prime_check = (bool*)malloc((n_root + 2)*sizeof(prime_check));  // tablica wykreslen
         primes_in_range = (int*)malloc(range*sizeof(primes_in_range));
 
     }
 
     // Sito <2, sqrt(n)>
-
-    prime_check = (bool*)malloc((n_root + 2)*sizeof(prime_check));
 
     for(int i = 2; i < n_root + 2; i++)
         if(prime_check[i] == false) {
@@ -51,19 +50,9 @@ int main(int argc, char* argv[]) {
                 prime_check[j] = true;
         }
 
-        /*
-        for(int i = 0; i < n_root + 2; i++)
-            printf("%d ", prime_check[i]);
-
-        printf("\n\n");
-
-        for(int i = 0; i < n_root + 2; i++)
-            printf("%d\n", primes_to_root[i]);
-        */
-
     // Sito <M, N>
 
-    for(int i = 0; i < n_root + 2; i++)
+    for(int i = 2; i < n_root + 2; i++)
         if(primes_to_root[i] == true) {
             int lowest = floor(m / i) * i;
 
