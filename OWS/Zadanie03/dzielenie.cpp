@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
     int n = 0;
     int show_result = 0;
     int range = 0;
+
     bool *prime_numbers;
 
     // Wczytanie wartości
@@ -28,21 +29,23 @@ int main(int argc, char* argv[]) {
         if(m > n) {
             printf("Przedzial <%d, %d> nie istnieje! Moze pomyliles kolejnosc liczb?\n", m, n);
             return 0;
+        } else if(m < 2) { // Takie ulatwienie
+            printf("Podaj liczbe wieksza badz rowna 2 jako pierwsza liczbe!\n");
+            return 0;
         }
 
-        prime_numbers = (bool*)malloc(range*sizeof(prime_numbers));
+        prime_numbers = (bool*)malloc(range * sizeof(prime_numbers));
     }
+
+    for(int i = 0; i < range; i++)
+        prime_numbers[i] = false;
 
     for(int i = m; i <= n; i++) {
         int root = (int)sqrt(i);
 
         if(root >= 2) {
-
-            // printf("Dla liczby %d pierwiastek wynosi %d\n", i, root);
-
             for(int j = 2; j <= root; j++) {
                 if(i % j == 0) {
-                    // printf("Dziele %d przez %d\n", i, j);
                     prime_numbers[i - m] = true;
                     break;
                 }
