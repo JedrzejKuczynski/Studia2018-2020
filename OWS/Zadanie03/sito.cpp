@@ -38,16 +38,16 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        prime_check = (bool*)malloc((n_root + 2) * sizeof(prime_check));  // tablica wykreslen do pierwiastka z N
-        primes_to_root = (bool*)malloc((n_root + 2) * sizeof(primes_to_root));  // tablica okreslajaca liczby pierwsze do pierwiastka z N
+        prime_check = (bool*)malloc((n_root + 1) * sizeof(prime_check));  // tablica wykreslen do pierwiastka z N
+        primes_to_root = (bool*)malloc((n_root + 1) * sizeof(primes_to_root));  // tablica okreslajaca liczby pierwsze do pierwiastka z N
         primes_in_range = (bool*)malloc(range * sizeof(primes_in_range));  // tablica wykreslen dla przedzialu <M, N>
 
     }
 
-    for(int i = 0; i < n_root + 2; i++)
+    for(int i = 0; i < n_root + 1; i++)
         prime_check[i] = false;
 
-    for(int i = 0; i < n_root + 2; i++)
+    for(int i = 0; i < n_root + 1; i++)
         primes_to_root[i] = false;
 
     for(int i = 0; i < range; i++)
@@ -58,17 +58,17 @@ int main(int argc, char* argv[]) {
     clock_t clock_tstart = clock();
     double start = omp_get_wtime();
 
-    for(int i = 2; i < n_root + 2; i++)
+    for(int i = 2; i < n_root + 1; i++)
         if(prime_check[i] == false) {
             primes_to_root[i] = true;
 
-            for(int j = i; j < n_root + 2; j += i)
+            for(int j = i; j < n_root + 1; j += i)
                 prime_check[j] = true;
         }
 
     // Sito <M, N>
 
-    for(int i = 2; i < n_root + 2; i++)
+    for(int i = 2; i < n_root + 1; i++)
         if(primes_to_root[i] == true) {
             int lowest = floor(m / i) * i;
 

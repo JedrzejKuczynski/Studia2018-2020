@@ -5,7 +5,7 @@
 #include <time.h>
 #include <omp.h>
 
-int num_procs = 16;
+int num_procs = 4;
 
 int main(int argc, char* argv[]) {
 
@@ -67,8 +67,8 @@ int main(int argc, char* argv[]) {
 
     // Ustalanie podzialu pracy
 
-    int elements_per_thread = range / num_procs;
-    int remainder = range % num_procs;
+    int elements_per_thread = (n_root + 1) / num_procs;
+    int remainder = (n_root + 1) % num_procs;
 
     // ---- TUTAJ POCZĄTEK OMP PARALELL ---- //
 
@@ -79,19 +79,15 @@ int main(int argc, char* argv[]) {
     {
 
         int thread_id = omp_get_thread_num();
-        int start = (thread_id * elements_per_thread) + fmin(thread_id, remainder) + m;
-        int end = ((thread_id + 1) * elements_per_thread) + fmin(thread_id + 1, remainder) - 1 + m;
+        int start = (thread_id * elements_per_thread) + fmin(thread_id, remainder);
+        int end = ((thread_id + 1) * elements_per_thread) + fmin(thread_id + 1, remainder) - 1;
 
         #pragma omp for
         for(int p = 0; p < num_procs; p++){
 
-            // printf("PROCES %d wita sie! START: %d; END: %d; LENGTH: %d\n\n", thread_id, start, end, length);
-
-            for(i = 2; i < n_root + 1; i++)
-                // printf("PROCES %d aktualne i: %d\n\n", thread_id, i);
+            for(i = start; i <= end; i++) {
                 if(primes_to_root[i] == true) {
-                    // printf("PROCES %d potwierdza, ze %d jest pierwsza i robi prace\n\n", thread_id, i);
-                    int lowest = floor(start / i) * i;
+                    int lowest = floor(m / i) * i;
 
                     if(lowest < m)
                         lowest += i;
@@ -99,11 +95,10 @@ int main(int argc, char* argv[]) {
                     if(lowest == i)
                         lowest += i;
 
-                    // printf("PROCES %d znalazl %d i raportuje, ze zacznie wykreslanie od %d\n\n", thread_id, i, lowest);
-
-                    for(j = lowest; j <= end; j += i)
+                    for(j = lowest; j <= n; j += i)
                         primes_in_range[j - m] = true;
                 }
+            }
         }
 
     }
