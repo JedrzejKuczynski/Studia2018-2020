@@ -6,6 +6,8 @@
 #include <omp.h>
 
 
+int num_procs = 4;
+
 int main(int argc, char* argv[]) {
 
     int m = 0;
@@ -43,17 +45,22 @@ int main(int argc, char* argv[]) {
     clock_t clock_tstart = clock();
     double start = omp_get_wtime();
 
-    for(int i = m; i <= n; i++) {
-        int root = (int)sqrt(i);
+    #pragma omp parallel num_threads(num_procs)
+    {
 
-        if(root >= 2) {
-            for(int j = 2; j <= root; j++) {
-                if(i % j == 0) {
-                    prime_numbers[i - m] = true;
-                    break;
+        #pragma omp for schedule(dynamic)   // Trza ustalić testowane przedziały
+            for(int i = m; i <= n; i++) {
+                int root = (int)sqrt(i);
+
+                if(root >= 2) {
+                    for(int j = 2; j <= root; j++) {
+                        if(i % j == 0) {
+                            prime_numbers[i - m] = true;
+                            break;
+                        }
+                    }
                 }
             }
-        }
     }
 
     clock_t clock_tstop = clock();

@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    clock_t clock_tstop= clock();
+    clock_t clock_tstop = clock();
     double stop = omp_get_wtime();
 
     printf("Wykorzystany czas procesorow wynosi %f sekund\n", ((double)(clock_tstop - clock_tstart)/(double)CLOCKS_PER_SEC));
