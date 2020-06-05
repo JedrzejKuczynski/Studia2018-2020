@@ -65,11 +65,6 @@ int main(int argc, char* argv[]) {
                 prime_check[j] = true;
         }
 
-    // Ustalanie podzialu pracy
-
-    int elements_per_thread = (n_root + 1) / num_procs;
-    int remainder = (n_root + 1) % num_procs;
-
     // ---- TUTAJ POCZĄTEK OMP PARALELL ---- //
 
     clock_t clock_tstart = clock();
@@ -78,25 +73,27 @@ int main(int argc, char* argv[]) {
     #pragma omp parallel num_threads(num_procs) private(i, j) shared(primes_to_root, primes_in_range)
     {
 
-        int thread_id = omp_get_thread_num();
-        int start = (thread_id * elements_per_thread) + fmin(thread_id, remainder);
-        int end = ((thread_id + 1) * elements_per_thread) + fmin(thread_id + 1, remainder) - 1;
+        // int thread_id = omp_get_thread_num();
 
+        #pragma omp for schedule(static)  // Trza ustalić testowane przedziały
+            for(int p = 2; p < n_root + 1; p++) {
 
-        for(i = start; i <= end; i++) {
-            if(primes_to_root[i] == true) {
-                int lowest = floor(m / i) * i;
+                if(primes_to_root[p] == true) {
 
-                if(lowest < m)
-                    lowest += i;
+                    // printf("PROCES %d OTRZYMAL LICZBE PIERWSZA %d\n\n", thread_id, p);
 
-                if(lowest == i)
-                    lowest += i;
+                    int lowest = floor(m / p) * p;
 
-                for(j = lowest; j <= n; j += i)
-                    primes_in_range[j - m] = true;
+                    if(lowest < m)
+                        lowest += p;
+
+                    if(lowest == p)
+                        lowest += p;
+
+                    for(j = lowest; j <= n; j += p)
+                        primes_in_range[j - m] = true;
+                }
             }
-        }
     }
 
     clock_t clock_tstop= clock();

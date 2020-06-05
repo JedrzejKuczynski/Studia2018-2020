@@ -13,6 +13,7 @@ int main(int argc, char* argv[]) {
     int n = 0;
     int n_root = 0;
     int range = 0;
+    int range_root = 0;
     int show_result = 0;
 
     int i, j;
@@ -32,6 +33,7 @@ int main(int argc, char* argv[]) {
         show_result = atoi(argv[3]);
         n_root = int(sqrt(n));
         range = n - m + 1;
+        range_root = round(sqrt(range));
 
         if(m > n) {
             printf("Przedzial <%d, %d> nie istnieje! Moze pomyliles kolejnosc liczb?\n", m, n);
@@ -65,11 +67,6 @@ int main(int argc, char* argv[]) {
                 prime_check[j] = true;
         }
 
-    // Ustalanie podzialu pracy
-
-    int elements_per_thread = (n_root + 1) / num_procs;
-    int remainder = (n_root + 1) % num_procs;
-
     // ---- TUTAJ POCZĄTEK OMP PARALELL ---- //
 
     clock_t clock_tstart = clock();
@@ -78,26 +75,40 @@ int main(int argc, char* argv[]) {
     #pragma omp parallel num_threads(num_procs) private(i, j) shared(primes_to_root, primes_in_range)
     {
 
-        int thread_id = omp_get_thread_num();
-        int start = (thread_id * elements_per_thread) + fmin(thread_id, remainder);
-        int end = ((thread_id + 1) * elements_per_thread) + fmin(thread_id + 1, remainder) - 1;
+        // int thread_id = omp_get_thread_num();
 
+        #pragma omp for schedule(static)  // Trza ustalić testowane przedziały
+            for(int p = 0; p < range_root; p++) {
 
-        for(i = start; i <= end; i++) {
-            if(primes_to_root[i] == true) {
-                int lowest = floor(m / i) * i;
+                int start = p * range_root;
+                int end = 0;
+                
+                if(p == range_root - 1)
+                    end = n;
+                else
+                    end = start + range_root;
 
-                if(lowest < m)
-                    lowest += i;
+                // printf("PROCES %d wita sie! START: %d; END: %d\n\n", thread_id, start, end);
 
-                if(lowest == i)
-                    lowest += i;
+                for(i = 2; i < n_root + 1; i++)
+                    // printf("PROCES %d aktualne i: %d\n\n", thread_id, i);
+                    if(primes_to_root[i] == true) {
+                        // printf("PROCES %d potwierdza, ze %d jest pierwsza i robi prace\n\n", thread_id, i);
+                        int lowest = floor(start / i) * i;
 
-                for(j = lowest; j <= n; j += i)
-                    primes_in_range[j - m] = true;
+                        if(lowest < m)
+                            lowest += i;
+
+                        if(lowest == i)
+                            lowest += i;
+
+                        // printf("PROCES %d znalazl %d i raportuje, ze zacznie wykreslanie od %d\n\n", thread_id, i, lowest);
+
+                        for(j = lowest; j <= end; j += i)
+                            primes_in_range[j - m] = true;
+                    }
             }
         }
-    }
 
     clock_t clock_tstop= clock();
     double stop = omp_get_wtime();

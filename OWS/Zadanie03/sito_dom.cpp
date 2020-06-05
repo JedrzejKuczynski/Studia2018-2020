@@ -5,7 +5,7 @@
 #include <time.h>
 #include <omp.h>
 
-int num_procs = 16;
+int num_procs = 4;
 
 int main(int argc, char* argv[]) {
 
@@ -82,31 +82,26 @@ int main(int argc, char* argv[]) {
         int start = (thread_id * elements_per_thread) + fmin(thread_id, remainder) + m;
         int end = ((thread_id + 1) * elements_per_thread) + fmin(thread_id + 1, remainder) - 1 + m;
 
-        #pragma omp for
-        for(int p = 0; p < num_procs; p++){
+        // printf("PROCES %d wita sie! START: %d; END: %d\n\n", thread_id, start, end);
 
-            // printf("PROCES %d wita sie! START: %d; END: %d; LENGTH: %d\n\n", thread_id, start, end, length);
+        for(i = 2; i < n_root + 1; i++)
+            // printf("PROCES %d aktualne i: %d\n\n", thread_id, i);
+            if(primes_to_root[i] == true) {
+                // printf("PROCES %d potwierdza, ze %d jest pierwsza i robi prace\n\n", thread_id, i);
+                int lowest = floor(start / i) * i;
 
-            for(i = 2; i < n_root + 1; i++)
-                // printf("PROCES %d aktualne i: %d\n\n", thread_id, i);
-                if(primes_to_root[i] == true) {
-                    // printf("PROCES %d potwierdza, ze %d jest pierwsza i robi prace\n\n", thread_id, i);
-                    int lowest = floor(start / i) * i;
+                if(lowest < m)
+                    lowest += i;
 
-                    if(lowest < m)
-                        lowest += i;
+                if(lowest == i)
+                    lowest += i;
 
-                    if(lowest == i)
-                        lowest += i;
+                // printf("PROCES %d znalazl %d i raportuje, ze zacznie wykreslanie od %d\n\n", thread_id, i, lowest);
 
-                    // printf("PROCES %d znalazl %d i raportuje, ze zacznie wykreslanie od %d\n\n", thread_id, i, lowest);
-
-                    for(j = lowest; j <= end; j += i)
-                        primes_in_range[j - m] = true;
-                }
+                for(j = lowest; j <= end; j += i)
+                    primes_in_range[j - m] = true;
+            }
         }
-
-    }
 
     clock_t clock_tstop= clock();
     double stop = omp_get_wtime();
