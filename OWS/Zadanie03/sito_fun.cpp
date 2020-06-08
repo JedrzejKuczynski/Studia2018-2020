@@ -94,7 +94,8 @@ int main(int argc, char* argv[]) {
                     lowest += i;
 
                 for(j = lowest; j <= n; j += i)
-                    primes_in_range[j - m] = true;
+                    if(primes_in_range[j - m] != true)
+                        primes_in_range[j - m] = true;
             }
         }
     }

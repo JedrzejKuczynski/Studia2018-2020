@@ -5,6 +5,7 @@
 #include <time.h>
 #include <omp.h>
 
+
 int num_procs = 4;
 
 int main(int argc, char* argv[]) {
@@ -30,8 +31,6 @@ int main(int argc, char* argv[]) {
         m = atoi(argv[1]);
         n = atoi(argv[2]);
         show_result = atoi(argv[3]);
-        n_root = int(sqrt(n));
-        range = n - m + 1;
 
         if(m > n) {
             printf("Przedzial <%d, %d> nie istnieje! Moze pomyliles kolejnosc liczb?\n", m, n);
@@ -40,11 +39,14 @@ int main(int argc, char* argv[]) {
             printf("Podaj liczbe wieksza badz rowna 2 jako pierwsza liczbe!\n");
             return 0;
         }
-
-        prime_check = (bool*)malloc((n_root + 1) * sizeof(prime_check));  // tablica wykreslen do pierwiastka z N
-        primes_to_root = (bool*)malloc((n_root + 1) * sizeof(primes_to_root));  // tablica okreslajaca liczby pierwsze do pierwiastka z N
-        primes_in_range = (bool*)malloc(range * sizeof(primes_in_range));  // tablica wykreslen dla przedzialu <M, N>
     }
+
+    n_root = int(sqrt(n));
+    range = n - m + 1;
+
+    prime_check = (bool*)malloc((n_root + 1) * sizeof(prime_check));  // tablica wykreslen do pierwiastka z N
+    primes_to_root = (bool*)malloc((n_root + 1) * sizeof(primes_to_root));  // tablica okreslajaca liczby pierwsze do pierwiastka z N
+    primes_in_range = (bool*)malloc(range * sizeof(primes_in_range));  // tablica wykreslen dla przedzialu <M, N>
 
     for(i = 0; i < n_root + 1; i++)
         prime_check[i] = false;
@@ -91,7 +93,8 @@ int main(int argc, char* argv[]) {
                         lowest += p;
 
                     for(j = lowest; j <= n; j += p)
-                        primes_in_range[j - m] = true;
+                        if(primes_in_range[j - m] != true)
+                            primes_in_range[j - m] = true;
                 }
             }
     }

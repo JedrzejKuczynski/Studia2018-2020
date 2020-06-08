@@ -99,7 +99,8 @@ int main(int argc, char* argv[]) {
                 // printf("PROCES %d znalazl %d i raportuje, ze zacznie wykreslanie od %d\n\n", thread_id, i, lowest);
 
                 for(j = lowest; j <= end; j += i)
-                    primes_in_range[j - m] = true;
+                    if(primes_in_range[j - m] != true)
+                        primes_in_range[j - m] = true;
             }
         }
 
