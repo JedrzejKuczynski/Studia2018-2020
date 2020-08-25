@@ -35,10 +35,8 @@ int main(int argc, char* argv[]) {
     MPI_Irecv(&data_received_right, 1, MPI_INT, right, 42, MPI_COMM_WORLD, reqRecv);
     MPI_Irecv(&data_received_bottom, 1, MPI_INT, bottom, 42, MPI_COMM_WORLD, &reqRecv[1]);
 
-    MPI_Wait(reqSend, statRecv);
-    MPI_Wait(&reqSend[1], &statRecv[1]);
-
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Wait(reqRecv, statRecv);
+    MPI_Wait(&reqRecv[1], &statRecv[1]);
 
     printf("Rank %d odebrał: od prawego %d, a od dolnego %d!\n\n", rank, data_received_right, data_received_bottom);
     printf("Rank %d wysyła: do lewego sąsiada - %d oraz do górnego sąsiada - %d!\n\n", rank, left, top);
