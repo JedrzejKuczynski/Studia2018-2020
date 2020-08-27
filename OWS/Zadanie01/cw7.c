@@ -36,14 +36,14 @@ int main(int argc, char **argv) {
 	MPI_Comm_size(MPI_COMM_WORLD, &ncpus);
 
     if(my_rank == 0)
-        printf("obliczenia metoda Cannona dla tablicy %d x %d element�w \n", n, n);
+        printf("obliczenia metoda Cannona dla tablicy %d x %d elementów \n", n, n);
 
     if(my_rank == 0)
         startwtime1 = MPI_Wtime();  // czas w sekundach
 
     // ---- CZYTANIE DANYCH ---- //
 
-    // wczytanie danych przez proces rank = 0
+    // Wczytanie danych przez proces rank = 0 oraz wysylanie odpowiednich podmacierzy reszcie procesow
     if(my_rank == 0) {
         plik = fopen("liczby.txt", "r");
         if(plik == NULL) {
@@ -80,6 +80,8 @@ int main(int argc, char **argv) {
 
         fclose(plik);
 
+        // Rozsylanie odpowiednich podmacierzy A reszcie procesow
+
         for(int i = 0; i < PP; i++)
             for(int j = 0; j < PP; j++) {
                 int process_rank = i * PP + j;
@@ -93,11 +95,15 @@ int main(int argc, char **argv) {
             }
         }
 
+        // Tworzenie wlasne podmacierzy, tj dla procesu 0
+
         for(int ii = my_rank * (n / PP); ii < (my_rank + 1) * (n / PP); ii++)
             for(int jj = my_rank * (n / PP); jj < (my_rank + 1) * (n / PP); jj++)
                 aa[ii - (my_rank * (n / PP))][jj - (my_rank * (n / PP))] = a[ii][jj];
 
         plik = fopen("liczby.txt", "r");
+
+        // Analogicznie dla macierzy B
 
         for(int i = 0; i < n; i++)
             for(int j = 0; j < n; j++) {
@@ -123,7 +129,7 @@ int main(int argc, char **argv) {
             for(int jj = my_rank * (n / PP); jj < (my_rank + 1) * (n / PP); jj++)
                 bb[ii - (my_rank * (n / PP))][jj - (my_rank * (n / PP))] = b[ii][jj];
 
-    }else {
+    }else {  // Odbieranie podmacierzy przez reszte procesow
 
     	MPI_Irecv(aa, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqRecv);
         MPI_Wait(reqRecv, statRecv);
@@ -134,6 +140,8 @@ int main(int argc, char **argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
 
+    // Zerowanie podmacierzy wynikowej
+
     for(int i = 0; i < n / PP; i++)
         for(int j = 0; j < n / PP; j++)
             cc[i][j] = 0;
@@ -141,6 +149,8 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
 
     // ---- MNOZENIE CANNONA ---- //
+
+    // Okreslanie wlasnej pozycji i sasiadow w kracie toroidalnej
 
     row = my_rank / PP;
     col = my_rank % PP;
@@ -153,6 +163,8 @@ int main(int argc, char **argv) {
     if(my_rank == 0)
         startwtime2 = MPI_Wtime();  //czas w sekundach
 
+    // Przesuwanie rzedu "i" macierzy A "i" razy (zgodnie ze struktura kraty toroidalnej, cyklicznie)
+
     for(int i = 0; i < PP; i++) {
         if(row > i) {
             MPI_Isend(aa, n*n / P, MPI_FLOAT, left, tag, MPI_COMM_WORLD, reqSend);
@@ -162,6 +174,8 @@ int main(int argc, char **argv) {
 
         MPI_Barrier(MPI_COMM_WORLD);
     }
+
+    // Przesuwanie kolumny "i" macierzy B "i" razy (zgodnie ze struktura kraty toroidalnej, cyklicznie)
 
     for(int i = 0; i < PP; i++) {
         if(col > i) {
@@ -173,12 +187,20 @@ int main(int argc, char **argv) {
         MPI_Barrier(MPI_COMM_WORLD);
     }
 
+    // Dzieki temu poczatkowemu przesunieciu odpowiednie fragmenty macierzy A[i, k]
+    // oraz fragmenty macierzy B[k, j] znajduja sie w procesie P[i, j]
+    // gdzie "i", "j" i "k" to wspolrzedne w kracie toroidalnej
+
 
     for(int pr = 0; pr < PP; pr++) { // Iteracja przetwarzania
         for(int i = 0; i < n / PP; i++)
             for(int k = 0; k < n / PP; k++)
                 for(int j = 0; j < n / PP; j++)
-                    cc[i][j] += aa[i][k] * bb[k][j];
+                    cc[i][j] += aa[i][k] * bb[k][j];  // Obliczanie wyniku czesciowego w ramach swoich podtablic
+
+        // Rozsylanie podmacierzy A lewemu sasiadowi a podmiacierzy B gornemu (zgodnie ze struktura kraty toroidalnej, cyklicznie)
+        // A odbieranie od prawego i dolnego
+        // W celu obliczenia dalszych fragmentów macierzy wynikowej
 
         if(pr < PP - 1) {
             MPI_Isend(aa, n*n / P, MPI_FLOAT, left, tag, MPI_COMM_WORLD, reqSend);
@@ -198,9 +220,11 @@ int main(int argc, char **argv) {
         printf("Calkowity czas przetwarzania wynosi %f sekund\n", endwtime - startwtime1);
         printf("Calkowity czas obliczen wynosi %f sekund\n", endwtime - startwtime2);
     } else
-        MPI_Isend(cc, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqSend);
+        MPI_Isend(cc, n*n / P, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, reqSend);  // Rosylanie fragmentow macierzy wynikowej do procesu 0
 
     if(my_rank == 0) {
+
+        // Zbieranie macierzy wynikowej
 
         for(int i = 0; i < n; i++)
             for(int j = 0; j < n; j++)
